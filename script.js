@@ -1,4 +1,5 @@
 
+
 /**
  * PreSales Quiz Application Logic with Firebase
  */
@@ -52,6 +53,7 @@ const app = {
         
         qCurrent: document.getElementById('q-current'),
         progressBar: document.getElementById('progress-bar'),
+        progressText: document.getElementById('progress-text'),
         questionText: document.getElementById('question-text'),
         optionsContainer: document.getElementById('options-container'),
         
@@ -72,7 +74,7 @@ const app = {
         this.currentType = null;
         this.hideAllViews();
         this.ui.viewWelcome.classList.remove('hidden');
-        this.ui.pageTitle.innerText = "PreSales Training";
+        this.ui.pageTitle.innerText = "Dashboard";
         this.ui.userDisplay.classList.add('hidden');
         this.updateActiveMenu(null);
     },
@@ -81,7 +83,7 @@ const app = {
         this.currentType = type;
         this.hideAllViews();
         this.ui.viewInput.classList.remove('hidden');
-        this.ui.pageTitle.innerText = `${type} Quiz 시작`;
+        this.ui.pageTitle.innerText = `${type} Level Assessment`;
         this.updateActiveMenu(type);
         this.ui.usernameInput.value = '';
         this.ui.usernameInput.focus();
@@ -102,6 +104,7 @@ const app = {
             this.userName = name;
             this.ui.displayName.innerText = name;
             this.ui.userDisplay.classList.remove('hidden');
+            this.ui.userDisplay.classList.add('flex'); // Ensure flex display
             
             // Fetch from Firebase
             await this.fetchQuestions(this.currentType);
@@ -165,20 +168,24 @@ const app = {
         this.ui.qCurrent.innerText = this.currentQuestionIndex + 1;
         const progressPercent = ((this.currentQuestionIndex) / 5) * 100;
         this.ui.progressBar.style.width = `${progressPercent}%`;
+        if (this.ui.progressText) {
+            this.ui.progressText.innerText = `${Math.round(progressPercent)}%`;
+        }
         
         this.ui.questionText.innerText = q.q;
         this.ui.optionsContainer.innerHTML = '';
 
         q.a.forEach((optionText, idx) => {
             const btn = document.createElement('button');
-            btn.className = "w-full text-left p-4 rounded-xl border border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group relative";
+            // Premium styling for options
+            btn.className = "w-full text-left p-5 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all duration-200 group relative flex items-center card-hover-effect";
             
             const content = `
-                <div class="flex items-start">
-                    <span class="flex-shrink-0 h-6 w-6 rounded-full border border-slate-300 group-hover:border-blue-500 mr-3 flex items-center justify-center text-xs font-bold text-slate-500 group-hover:text-blue-500 transition-colors">
-                        ${String.fromCharCode(65 + idx)}
-                    </span>
-                    <span class="text-slate-700 group-hover:text-slate-900 font-medium">${optionText}</span>
+                <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-bold flex items-center justify-center mr-4 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-200 text-sm">
+                    ${String.fromCharCode(65 + idx)}
+                </div>
+                <div class="flex-1">
+                     <span class="text-slate-700 font-medium text-lg group-hover:text-slate-900 transition-colors">${optionText}</span>
                 </div>
             `;
             btn.innerHTML = content;
@@ -197,23 +204,39 @@ const app = {
         // Disable all buttons
         for (let btn of buttons) {
             btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btn.classList.remove('hover:border-blue-500', 'hover:shadow-md', 'card-hover-effect'); // Remove hover effects
         }
 
         // Check correct (API uses 0-based index)
         if (selectedIndex === currentQ.correct) {
             this.score += 20;
-            selectedBtn.classList.remove('border-slate-200', 'hover:border-blue-500', 'hover:bg-blue-50');
-            selectedBtn.classList.add('bg-green-100', 'border-green-500');
+            selectedBtn.classList.remove('border-slate-200', 'bg-white');
+            selectedBtn.classList.add('bg-green-50', 'border-green-500', 'ring-1', 'ring-green-500');
+            
+            // Icon feedback
+            const iconDiv = selectedBtn.querySelector('div:first-child');
+            iconDiv.classList.remove('bg-slate-100', 'text-slate-500', 'group-hover:bg-blue-600');
+            iconDiv.classList.add('bg-green-500', 'text-white');
+            
         } else {
-            selectedBtn.classList.remove('border-slate-200', 'hover:border-blue-500', 'hover:bg-blue-50');
-            selectedBtn.classList.add('bg-red-100', 'border-red-500');
+            selectedBtn.classList.remove('border-slate-200', 'bg-white');
+            selectedBtn.classList.add('bg-red-50', 'border-red-500', 'ring-1', 'ring-red-500');
+            
+             // Icon feedback for wrong
+            const iconDiv = selectedBtn.querySelector('div:first-child');
+            iconDiv.classList.remove('bg-slate-100', 'text-slate-500', 'group-hover:bg-blue-600');
+            iconDiv.classList.add('bg-red-500', 'text-white');
             
             // Highlight correct one
             const correctBtn = buttons[currentQ.correct];
             if (correctBtn) {
-                correctBtn.classList.remove('border-slate-200', 'hover:border-blue-500', 'hover:bg-blue-50', 'opacity-50');
-                correctBtn.classList.add('bg-green-50', 'border-green-400');
+                correctBtn.classList.remove('border-slate-200', 'bg-white', 'opacity-70');
+                correctBtn.classList.add('bg-green-50', 'border-green-500', 'ring-1', 'ring-green-500');
+                
+                const correctIcon = correctBtn.querySelector('div:first-child');
+                correctIcon.classList.remove('bg-slate-100', 'text-slate-500');
+                correctIcon.classList.add('bg-green-500', 'text-white');
             }
         }
 
@@ -225,7 +248,7 @@ const app = {
             } else {
                 this.showResult();
             }
-        }, 1000);
+        }, 1200);
     },
 
     showResult: function() {
@@ -247,6 +270,7 @@ const app = {
         }, 20);
         
         this.ui.progressBar.style.width = '100%';
+        if (this.ui.progressText) this.ui.progressText.innerText = '100%';
     },
 
     // Helper: Utility
@@ -260,16 +284,53 @@ const app = {
 
     updateActiveMenu: function(type) {
         // Reset styles
-        const inactiveClass = "hover:bg-slate-800";
-        const activeClass = "bg-slate-800 ring-2 ring-blue-500";
+        const inactiveClass = "hover:bg-slate-800/80";
+        const activeClass = "bg-slate-800 ring-1 ring-white/10 shadow-lg";
         
-        this.ui.btn100.classList.remove(...activeClass.split(' '));
-        this.ui.btn200.classList.remove(...activeClass.split(' '));
+        // Helper to reset a specific button
+        const resetBtn = (btn) => {
+            btn.classList.remove(...activeClass.split(' '));
+            btn.classList.add(...inactiveClass.split(' '));
+            // Reset number circle
+            const circle = btn.querySelector('span:first-child');
+            if (circle) {
+                circle.classList.remove('bg-blue-500', 'bg-teal-500', 'text-white');
+                circle.classList.add('bg-slate-800', 'text-slate-400');
+            }
+            // Reset text
+            const text = btn.querySelector('span:last-child');
+            if (text) {
+                text.classList.remove('text-white');
+                text.classList.add('text-slate-300');
+            }
+        };
+
+        resetBtn(this.ui.btn100);
+        resetBtn(this.ui.btn200);
         
         if (type === '100') {
+            this.ui.btn100.classList.remove(...inactiveClass.split(' '));
             this.ui.btn100.classList.add(...activeClass.split(' '));
+            
+            const circle = this.ui.btn100.querySelector('span:first-child');
+            circle.classList.remove('bg-slate-800', 'text-slate-400');
+            circle.classList.add('bg-blue-500', 'text-white');
+            
+            const text = this.ui.btn100.querySelector('span:last-child');
+            text.classList.remove('text-slate-300');
+            text.classList.add('text-white');
+
         } else if (type === '200') {
+            this.ui.btn200.classList.remove(...inactiveClass.split(' '));
             this.ui.btn200.classList.add(...activeClass.split(' '));
+            
+            const circle = this.ui.btn200.querySelector('span:first-child');
+            circle.classList.remove('bg-slate-800', 'text-slate-400');
+            circle.classList.add('bg-teal-500', 'text-white');
+
+            const text = this.ui.btn200.querySelector('span:last-child');
+            text.classList.remove('text-slate-300');
+            text.classList.add('text-white');
         }
     }
 };
