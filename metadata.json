@@ -1,0 +1,5 @@
+{
+  "name": "PreSales Quiz",
+  "description": "A lightweight, pure JavaScript quiz application for PreSales training seminars featuring randomized 100 and 200 level questions.",
+  "requestFramePermissions": []
+}
