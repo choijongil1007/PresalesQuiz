@@ -35,12 +35,20 @@
             </button>
         </nav>
 
-        <div class="p-4 border-t border-slate-700 text-xs text-slate-500 text-center space-y-2">
-            <div>&copy; PreSales Seminar</div>
-            <!-- DB Seed Button -->
-            <button onclick="window.uploadInitialData()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-400 py-1 px-2 rounded border border-slate-600 transition-colors">
-                DB 데이터 업로드 (최초 1회)
-            </button>
+        <div class="p-4 border-t border-slate-700 text-xs text-slate-500 space-y-2">
+            <div class="text-center mb-2">&copy; PreSales Seminar</div>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <!-- DB Clear Button -->
+                <button onclick="window.clearDatabase()" class="text-[10px] bg-red-900/30 hover:bg-red-800 text-red-400 py-2 px-1 rounded border border-red-900/50 transition-colors text-center">
+                    DB 초기화(삭제)
+                </button>
+                <!-- DB Seed Button -->
+                <button onclick="window.uploadInitialData()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-400 py-2 px-1 rounded border border-slate-600 transition-colors text-center">
+                    DB 데이터 업로드
+                </button>
+            </div>
+            <p class="text-[9px] text-slate-600 text-center mt-1">관리자 전용 기능입니다</p>
         </div>
     </aside>
 
