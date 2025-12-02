@@ -66,6 +66,11 @@ const app = {
 
     // Initialization
     init: function() {
+        // Load saved name from localStorage
+        const savedName = localStorage.getItem('presales_username');
+        if (savedName) {
+            this.userName = savedName;
+        }
         this.resetToMenu();
     },
 
@@ -74,7 +79,7 @@ const app = {
         this.currentType = null;
         this.hideAllViews();
         this.ui.viewWelcome.classList.remove('hidden');
-        this.ui.pageTitle.innerText = "Dashboard";
+        this.ui.pageTitle.innerText = "대시보드";
         this.ui.userDisplay.classList.add('hidden');
         this.updateActiveMenu(null);
     },
@@ -82,18 +87,31 @@ const app = {
     selectQuiz: function(type) {
         this.currentType = type;
         this.hideAllViews();
-        this.ui.viewInput.classList.remove('hidden');
-        this.ui.pageTitle.innerText = `${type} Level Assessment`;
+        
+        this.ui.pageTitle.innerText = type === '100' ? "기초과정 100 평가" : "심화과정 200 평가";
         this.updateActiveMenu(type);
-        this.ui.usernameInput.value = '';
-        this.ui.usernameInput.focus();
+        
+        // If username is already saved/set, skip input and start immediately
+        if (this.userName) {
+            this.startQuiz();
+        } else {
+            this.ui.viewInput.classList.remove('hidden');
+            this.ui.usernameInput.value = '';
+            this.ui.usernameInput.focus();
+        }
     },
 
     startQuiz: async function() {
-        const name = this.ui.usernameInput.value.trim();
-        if (!name) {
-            alert("이름을 입력해주세요.");
-            return;
+        // If name is not set in state, get from input
+        if (!this.userName) {
+            const name = this.ui.usernameInput.value.trim();
+            if (!name) {
+                alert("이름을 입력해주세요.");
+                return;
+            }
+            this.userName = name;
+            // Save to local storage
+            localStorage.setItem('presales_username', name);
         }
         
         // Show Loading
@@ -101,8 +119,7 @@ const app = {
         this.ui.viewLoading.classList.remove('hidden');
 
         try {
-            this.userName = name;
-            this.ui.displayName.innerText = name;
+            this.ui.displayName.innerText = this.userName;
             this.ui.userDisplay.classList.remove('hidden');
             this.ui.userDisplay.classList.add('flex'); // Ensure flex display
             
@@ -177,15 +194,15 @@ const app = {
 
         q.a.forEach((optionText, idx) => {
             const btn = document.createElement('button');
-            // Premium styling for options
-            btn.className = "w-full text-left p-5 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all duration-200 group relative flex items-center card-hover-effect";
+            // Premium styling for options - Reduced padding to p-4 for better fit
+            btn.className = "w-full text-left p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all duration-200 group relative flex items-center card-hover-effect";
             
             const content = `
                 <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-100 text-slate-500 font-bold flex items-center justify-center mr-4 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-200 text-sm">
                     ${String.fromCharCode(65 + idx)}
                 </div>
                 <div class="flex-1">
-                     <span class="text-slate-700 font-medium text-lg group-hover:text-slate-900 transition-colors">${optionText}</span>
+                     <span class="text-slate-700 font-medium text-lg group-hover:text-slate-900 transition-colors leading-relaxed block">${optionText}</span>
                 </div>
             `;
             btn.innerHTML = content;

@@ -129,8 +129,8 @@
 </head>
 <body class="p-4 sm:p-8">
 
-    <!-- App Container (Centered, 1120px Max) -->
-    <div id="app-container" class="w-full max-w-[1120px] h-[85vh] min-h-[600px] bg-white rounded-3xl shadow-2xl flex overflow-hidden ring-1 ring-slate-900/5 relative animate-modal-in">
+    <!-- App Container (Centered, 1120px Max, Increased Height) -->
+    <div id="app-container" class="w-full max-w-[1120px] h-[92vh] min-h-[750px] bg-white rounded-3xl shadow-2xl flex overflow-hidden ring-1 ring-slate-900/5 relative animate-modal-in">
         
         <!-- Sidebar -->
         <aside class="w-72 bg-slate-900 text-white flex flex-col z-20 shrink-0">
@@ -143,27 +143,27 @@
                     </div>
                     <h1 class="text-xl font-bold tracking-tight">PreSales<span class="text-blue-400">Fit</span></h1>
                 </div>
-                <p class="text-xs text-slate-400 font-medium ml-11">Technical Sales Mastery</p>
+                <p class="text-xs text-slate-400 font-medium ml-11">프리세일즈 역량 강화</p>
             </div>
             
             <nav class="flex-1 p-6 space-y-3">
-                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 px-2">Quiz Modules</div>
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 px-2">퀴즈 모듈</div>
                 
                 <button onclick="window.app.selectQuiz('100')" id="btn-100" class="w-full text-left px-4 py-3.5 rounded-xl hover:bg-slate-800/80 transition-all duration-200 flex items-center space-x-3 group border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-colors text-xs font-bold shadow-inner">1</span>
-                    <span class="font-medium text-slate-300 group-hover:text-white transition-colors">Basic 100</span>
+                    <span class="font-medium text-slate-300 group-hover:text-white transition-colors">기초과정 100</span>
                 </button>
                 
                 <button onclick="window.app.selectQuiz('200')" id="btn-200" class="w-full text-left px-4 py-3.5 rounded-xl hover:bg-slate-800/80 transition-all duration-200 flex items-center space-x-3 group border border-transparent focus:outline-none focus:ring-2 focus:ring-teal-500/50">
                     <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 text-slate-400 group-hover:bg-teal-500 group-hover:text-white transition-colors text-xs font-bold shadow-inner">2</span>
-                    <span class="font-medium text-slate-300 group-hover:text-white transition-colors">Advanced 200</span>
+                    <span class="font-medium text-slate-300 group-hover:text-white transition-colors">심화과정 200</span>
                 </button>
             </nav>
 
             <div class="p-6 border-t border-slate-800/50">
                 <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
                     <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                    <span class="text-xs text-slate-400 font-medium">System Online</span>
+                    <span class="text-xs text-slate-400 font-medium">시스템 정상 작동 중</span>
                 </div>
             </div>
         </aside>
@@ -174,12 +174,12 @@
             <!-- Header -->
             <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center justify-between px-10 z-10 sticky top-0">
                 <div>
-                    <h2 id="page-title" class="text-xl font-bold text-slate-800 tracking-tight">Dashboard</h2>
-                    <p class="text-xs text-slate-500 font-medium mt-0.5">Welcome to the assessment portal</p>
+                    <h2 id="page-title" class="text-xl font-bold text-slate-800 tracking-tight">대시보드</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">프리세일즈 역량 진단 시스템</p>
                 </div>
                 <div id="user-display" class="hidden flex items-center gap-3 bg-white border border-slate-200 px-4 py-2 rounded-full shadow-sm">
                     <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">U</div>
-                    <span class="text-sm font-semibold text-slate-600">User: <span id="display-name" class="text-slate-900"></span></span>
+                    <span class="text-sm font-semibold text-slate-600">수험자: <span id="display-name" class="text-slate-900"></span></span>
                 </div>
             </header>
 
@@ -194,10 +194,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                             </svg>
                         </div>
-                        <h3 class="text-3xl font-bold text-slate-900 mb-4 tracking-tight">PreSales Competency Assessment</h3>
+                        <h3 class="text-3xl font-bold text-slate-900 mb-4 tracking-tight">프리세일즈 역량 진단</h3>
                         <p class="text-slate-500 leading-relaxed mb-0 text-lg">
-                            Select a quiz module from the sidebar to begin your training session.<br>
-                            Questions are randomly selected from the <span class="font-semibold text-blue-600">Firebase Cloud Database</span>.
+                            좌측 메뉴에서 퀴즈 과정을 선택하여 시작하세요.<br>
+                            문제는 <span class="font-semibold text-blue-600">Firebase 클라우드 DB</span>에서 랜덤으로 출제됩니다.
                         </p>
                     </div>
                 </div>
@@ -206,16 +206,16 @@
                 <div id="view-input" class="hidden max-w-lg mx-auto mt-24 animate-modal-in">
                     <div class="bg-white p-10 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-slate-100">
                         <div class="text-center mb-8">
-                            <h3 class="text-2xl font-bold text-slate-900">Identification</h3>
-                            <p class="text-slate-500 text-sm mt-1">Please enter your name to start the session</p>
+                            <h3 class="text-2xl font-bold text-slate-900">사용자 등록</h3>
+                            <p class="text-slate-500 text-sm mt-1">진단을 시작하기 위해 성함을 입력해주세요.</p>
                         </div>
                         <div class="space-y-6">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-700 mb-2 ml-1">Full Name</label>
-                                <input type="text" id="username-input" class="input-premium" placeholder="e.g. Gildong Hong" onkeyup="if(event.key === 'Enter') window.app.startQuiz()">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 ml-1">성명</label>
+                                <input type="text" id="username-input" class="input-premium" placeholder="예: 홍길동" onkeyup="if(event.key === 'Enter') window.app.startQuiz()">
                             </div>
                             <button onclick="window.app.startQuiz()" class="w-full btn-primary flex justify-center items-center gap-2">
-                                Start Assessment
+                                진단 시작
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>
@@ -227,8 +227,8 @@
                  <!-- VIEW: Loading -->
                  <div id="view-loading" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center fade-in">
                     <div class="spinner mb-6"></div>
-                    <p class="text-slate-900 font-semibold tracking-wide">Retrieving Data...</p>
-                    <p class="text-xs text-slate-500 mt-2">Connecting to Firestore</p>
+                    <p class="text-slate-900 font-semibold tracking-wide">데이터 수신 중...</p>
+                    <p class="text-xs text-slate-500 mt-2">데이터베이스 연결</p>
                 </div>
 
                 <!-- VIEW: Quiz -->
@@ -236,7 +236,7 @@
                     <!-- Progress Header -->
                     <div class="flex items-center justify-between mb-8 px-1">
                         <div>
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Question</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">문항</span>
                             <div class="flex items-baseline gap-1">
                                 <span id="q-current" class="text-3xl font-black text-slate-900">1</span>
                                 <span class="text-lg font-medium text-slate-400">/ 5</span>
@@ -244,7 +244,7 @@
                         </div>
                         <div class="w-48">
                              <div class="flex justify-between text-xs font-semibold text-slate-400 mb-2">
-                                <span>Progress</span>
+                                <span>진행률</span>
                                 <span id="progress-text">0%</span>
                              </div>
                             <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
@@ -259,7 +259,7 @@
                         <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-[100px] -z-0 opacity-50"></div>
                         
                         <h3 id="question-text" class="text-2xl font-bold text-slate-800 leading-relaxed mb-10 relative z-10">
-                            Loading question...
+                            문제 로딩 중...
                         </h3>
                         
                         <div id="options-container" class="space-y-4 relative z-10">
@@ -278,11 +278,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 class="text-3xl font-black text-slate-900 mb-2">Assessment Complete</h2>
-                        <p class="text-slate-500 mb-10">Result for <span id="result-name" class="font-bold text-slate-900">User</span></p>
+                        <h2 class="text-3xl font-black text-slate-900 mb-2">진단 완료</h2>
+                        <p class="text-slate-500 mb-10">수험자: <span id="result-name" class="font-bold text-slate-900">User</span></p>
                         
                         <div class="bg-slate-50 rounded-2xl p-8 mb-10 border border-slate-100">
-                            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total Score</div>
+                            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">최종 점수</div>
                             <div class="text-7xl font-black text-slate-900 tracking-tighter">
                                 <span id="score-text">0</span><span class="text-3xl text-slate-300 font-medium ml-1">/ 100</span>
                             </div>
@@ -292,7 +292,7 @@
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                             </svg>
-                            Return to Menu
+                            메뉴로 돌아가기
                         </button>
                     </div>
                 </div>
