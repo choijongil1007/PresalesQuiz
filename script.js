@@ -1,3 +1,4 @@
+
 /**
  * PreSales Quiz Application Logic with Firebase
  */
@@ -106,7 +107,7 @@ const app = {
             await this.fetchQuestions(this.currentType);
             
             if (this.questions.length === 0) {
-                alert("불러올 문제가 없습니다. 관리자에게 문의하여 데이터를 초기화해주세요.\n(Console > window.uploadInitialData())");
+                alert("불러올 문제가 없습니다. 관리자에게 문의하여 데이터를 초기화해주세요.\n(좌측 하단 'DB 데이터 업로드' 버튼)");
                 this.resetToMenu();
                 return;
             }
@@ -120,7 +121,15 @@ const app = {
 
         } catch (error) {
             console.error("Error starting quiz:", error);
-            alert("문제를 불러오는데 실패했습니다. 네트워크 연결을 확인해주세요.");
+            
+            let msg = "문제를 불러오는데 실패했습니다.";
+            if (error.message && error.message.includes("permission-denied")) {
+                msg += "\n(오류: 데이터베이스 접근 권한이 없거나 DB가 생성되지 않았습니다.)";
+            } else if (error.code === "unavailable") {
+                msg += "\n(오류: 네트워크 연결을 확인해주세요.)";
+            }
+            
+            alert(msg);
             this.resetToMenu();
         }
     },
@@ -192,13 +201,6 @@ const app = {
         }
 
         // Check correct (API uses 0-based index)
-        // Note: The data source correct index is 1-based in some raw texts but mapped to 0-based in data array?
-        // Let's verify data structure below. The provided data uses 1-based index (e.g. correct: 3).
-        // BUT arrays are 0-based. So we need to compare `selectedIndex + 1` == `currentQ.correct` OR adjust data.
-        // Looking at the provided data arrays in uploadInitialData below:
-        // "정답: 3" usually means 3rd option. In array index that is 2.
-        // The data below has `correct: 2` (0,1,2). So it is already 0-based index.
-        
         if (selectedIndex === currentQ.correct) {
             this.score += 20;
             selectedBtn.classList.remove('border-slate-200', 'hover:border-blue-500', 'hover:bg-blue-50');
@@ -280,16 +282,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- Utility: Seed Data to Firebase ---
-// Run window.uploadInitialData() in the console to populate DB
 window.uploadInitialData = async function() {
     if (!db) {
-        console.error("Firebase not initialized. Check config.");
+        console.error("Firebase not initialized.");
+        alert("Firebase 오류: 콘솔 설정을 확인해주세요.");
         return;
     }
-    
-    // Correct Index: '3' in text means 3rd option, which is index 2.
-    // I have verified the data below corresponds to the provided text, converting 1-based answer to 0-based index.
-    
+
+    if (!confirm("총 50개의 문제를 데이터베이스에 업로드하시겠습니까?\n(기존 데이터가 있다면 중복될 수 있습니다)")) {
+        return;
+    }
+
+    // Level 100 Data (Questions 1-20)
     const data100 = [
         { q: "프리세일즈의 핵심 역할은?", a: ["기능 요구사항만 전달하는 역할","기술 문제만 해결하는 역할","고객 의사결정을 돕는 기술·비즈니스 조율 역할","계약 이후 운영을 담당하는 역할"], correct: 2 },
         { q: "‘기술 대표’라는 표현의 의미는?", a: ["제품 로드맵을 결정하는 사람","사내 기술 총괄 책임자","고객의 기술적 신뢰 형성을 주도하는 역할","기술 문서를 관리하는 역할"], correct: 2 },
@@ -310,15 +314,16 @@ window.uploadInitialData = async function() {
         { q: "데모 ‘Show’ 단계의 역할은?", a: ["기능 나열","가격 안내","이해한 내용을 시각적으로 확인시키는 것","장표 설명"], correct: 2 },
         { q: "경청이 중요한 이유는?", a: ["말실수를 줄여서","기능을 더 잘 설명하기 위해","숨겨진 Pain을 파악하기 위해","미팅 시간을 늘리기 위해"], correct: 2 },
         { q: "문서 작성의 본질적 효과는?", a: ["문장력을 높인다","장표를 빠르게 만든다","사고를 구조화해 전략을 명확히 한다","고객에게 잘 보인다"], correct: 2 },
-        { q: "프리세일즈가 ‘해석자’로 불리는 이유는?", a: ["용어를 많이 알고 있어서","데이터를 직접 분석해서","고객 맥락에 맞춘 설명이 필요하기 때문에","개발팀을 대신하기 때문에"], correct: 2 },
+        { q: "프리세일즈가 ‘해석자’로 불리는 이유는?", a: ["용어를 많이 알고 있어서","데이터를 직접 분석해서","고객 맥락에 맞춘 설명이 필요하기 때문에","개발팀을 대신하기 때문에"], correct: 2 }
+    ];
+
+    // Level 200 Data (Questions 21-50)
+    const data200 = [
         { q: "BANT에서 판단이 가장 어려운 요소는?", a: ["예산","의사결정권","필요성","일정"], correct: 2 },
         { q: "Authority 판단 시 주의해야 할 점은?", a: ["직급이 낮다","회의에 자주 나온다","영향력을 가진 챔피언인지 여부","이메일을 많이 보낸다"], correct: 2 },
         { q: "고려 단계의 대표 문제는?", a: ["검색 부족","기능 비교 어려움","설정 복잡","채택 어려움"], correct: 1 },
         { q: "평가 단계의 터치포인트는?", a: ["블로그","가격 페이지","기술 문서·무료 체험","안내 이메일"], correct: 2 },
-        { q: "PoC에서 가장 위험한 상황은?", a: ["고객이 적극적이다","기간이 짧다","평가 기준이 없다","경쟁사가 많다"], correct: 2 }
-    ];
-
-    const data200 = [
+        { q: "PoC에서 가장 위험한 상황은?", a: ["고객이 적극적이다","기간이 짧다","평가 기준이 없다","경쟁사가 많다"], correct: 2 },
         { q: "솔루션 맵의 전략적 가치는?", a: ["문서를 보기 좋게 한다","제품 설명 시간을 줄인다","경쟁 구도를 기반으로 전략을 짤 수 있다","가격표를 만들 수 있다"], correct: 2 },
         { q: "MEDDPICC 중 프리세일즈 기여도가 높은 영역은?", a: ["계약 절차","가격 산정","Pain과 기준 정의","인사 체계"], correct: 2 },
         { q: "확장 단계에서의 적절한 활동은?", a: ["가격 협상","도입 검증","추가 기능 소개 및 성과 연계 제안","설정 가이드 제공"], correct: 2 },
@@ -346,24 +351,32 @@ window.uploadInitialData = async function() {
         { q: "AI 시대 프리세일즈가 가져야 할 조합은?", a: ["개발 + 디자인","마케팅 + 운영","컨설팅 관점 + 아키텍처 관점","HR + 기획"], correct: 2 }
     ];
 
-    const batchPromises = [];
-    console.log("Starting Upload...");
-    
-    // Upload 100
-    for(const q of data100) {
-        batchPromises.push(addDoc(collection(db, "questions"), { ...q, type: "100" }));
-    }
-    // Upload 200
-    for(const q of data200) {
-        batchPromises.push(addDoc(collection(db, "questions"), { ...q, type: "200" }));
-    }
-
     try {
+        const batchPromises = [];
+        
+        // Upload Level 100
+        console.log("Uploading 100 Quiz...");
+        data100.forEach(item => {
+            batchPromises.push(addDoc(collection(db, "questions"), {
+                ...item,
+                type: "100"
+            }));
+        });
+
+        // Upload Level 200
+        console.log("Uploading 200 Quiz...");
+        data200.forEach(item => {
+            batchPromises.push(addDoc(collection(db, "questions"), {
+                ...item,
+                type: "200"
+            }));
+        });
+
         await Promise.all(batchPromises);
-        console.log("Upload Complete! 50 questions added.");
-        alert("데이터 업로드가 완료되었습니다! 이제 퀴즈를 즐기세요.");
-    } catch(e) {
-        console.error("Upload Failed", e);
-        alert("업로드 실패. 콘솔 로그를 확인하세요.");
+        console.log("All data uploaded successfully!");
+        alert("데이터 업로드가 완료되었습니다! 이제 퀴즈를 시작할 수 있습니다.");
+    } catch (e) {
+        console.error("Error adding documents: ", e);
+        alert("업로드 중 오류가 발생했습니다. 권한 설정이나 인터넷 연결을 확인해주세요.");
     }
 };
