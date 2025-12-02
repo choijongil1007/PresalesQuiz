@@ -5,14 +5,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// TODO: Replace with your actual Firebase Configuration
+// Firebase Configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBGffkIfIGTAdtqcJHjozZrawpmyDiXN9g",
+    authDomain: "presalesquiz.firebaseapp.com",
+    projectId: "presalesquiz",
+    storageBucket: "presalesquiz.firebasestorage.app",
+    messagingSenderId: "500807721378",
+    appId: "1:500807721378:web:ef1f02c38faa54a72352fb",
+    measurementId: "G-X08W37H3EY"
 };
 
 // Initialize Firebase
@@ -20,8 +21,9 @@ let db;
 try {
     const firebaseApp = initializeApp(firebaseConfig);
     db = getFirestore(firebaseApp);
+    console.log("Firebase initialized successfully");
 } catch (e) {
-    console.error("Firebase Initialization Error. Please check your config in script.js", e);
+    console.error("Firebase Initialization Error:", e);
 }
 
 // --- Application Logic ---
@@ -104,7 +106,7 @@ const app = {
             await this.fetchQuestions(this.currentType);
             
             if (this.questions.length === 0) {
-                alert("데이터베이스에 문제가 없거나, Firebase 설정이 올바르지 않습니다.\n콘솔에서 window.uploadInitialData()를 실행하여 데이터를 초기화하세요.");
+                alert("불러올 문제가 없습니다. 관리자에게 문의하여 데이터를 초기화해주세요.\n(Console > window.uploadInitialData())");
                 this.resetToMenu();
                 return;
             }
@@ -118,17 +120,17 @@ const app = {
 
         } catch (error) {
             console.error("Error starting quiz:", error);
-            alert("문제를 불러오는데 실패했습니다. 네트워크 연결이나 설정을 확인해주세요.");
+            alert("문제를 불러오는데 실패했습니다. 네트워크 연결을 확인해주세요.");
             this.resetToMenu();
         }
     },
 
     fetchQuestions: async function(type) {
-        if (!db) return;
+        if (!db) {
+            throw new Error("Database not initialized");
+        }
 
         // Query Firestore for all questions of the selected type
-        // Since we need to pick 5 RANDOM questions, and the dataset is small (25 items),
-        // we fetch all for the type and shuffle in memory.
         const q = query(collection(db, "questions"), where("type", "==", type));
         const querySnapshot = await getDocs(q);
         
@@ -136,6 +138,12 @@ const app = {
         querySnapshot.forEach((doc) => {
             allQuestions.push(doc.data());
         });
+
+        if (allQuestions.length === 0) {
+            console.warn(`No questions found for type ${type}`);
+            this.questions = [];
+            return;
+        }
 
         // Randomly select 5
         this.questions = [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, 5);
@@ -183,7 +191,14 @@ const app = {
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         }
 
-        // Check correct
+        // Check correct (API uses 0-based index)
+        // Note: The data source correct index is 1-based in some raw texts but mapped to 0-based in data array?
+        // Let's verify data structure below. The provided data uses 1-based index (e.g. correct: 3).
+        // BUT arrays are 0-based. So we need to compare `selectedIndex + 1` == `currentQ.correct` OR adjust data.
+        // Looking at the provided data arrays in uploadInitialData below:
+        // "정답: 3" usually means 3rd option. In array index that is 2.
+        // The data below has `correct: 2` (0,1,2). So it is already 0-based index.
+        
         if (selectedIndex === currentQ.correct) {
             this.score += 20;
             selectedBtn.classList.remove('border-slate-200', 'hover:border-blue-500', 'hover:bg-blue-50');
@@ -194,8 +209,10 @@ const app = {
             
             // Highlight correct one
             const correctBtn = buttons[currentQ.correct];
-            correctBtn.classList.remove('border-slate-200', 'hover:border-blue-500', 'hover:bg-blue-50', 'opacity-50');
-            correctBtn.classList.add('bg-green-50', 'border-green-400');
+            if (correctBtn) {
+                correctBtn.classList.remove('border-slate-200', 'hover:border-blue-500', 'hover:bg-blue-50', 'opacity-50');
+                correctBtn.classList.add('bg-green-50', 'border-green-400');
+            }
         }
 
         // Wait then move next
@@ -219,11 +236,12 @@ const app = {
         const interval = setInterval(() => {
             if (currentDisplay >= this.score) {
                 currentDisplay = this.score;
+                this.ui.scoreText.innerText = this.score;
                 clearInterval(interval);
             } else {
                 currentDisplay += 1;
+                this.ui.scoreText.innerText = currentDisplay;
             }
-            this.ui.scoreText.innerText = currentDisplay;
         }, 20);
         
         this.ui.progressBar.style.width = '100%';
@@ -269,7 +287,9 @@ window.uploadInitialData = async function() {
         return;
     }
     
-    // Original Data
+    // Correct Index: '3' in text means 3rd option, which is index 2.
+    // I have verified the data below corresponds to the provided text, converting 1-based answer to 0-based index.
+    
     const data100 = [
         { q: "프리세일즈의 핵심 역할은?", a: ["기능 요구사항만 전달하는 역할","기술 문제만 해결하는 역할","고객 의사결정을 돕는 기술·비즈니스 조율 역할","계약 이후 운영을 담당하는 역할"], correct: 2 },
         { q: "‘기술 대표’라는 표현의 의미는?", a: ["제품 로드맵을 결정하는 사람","사내 기술 총괄 책임자","고객의 기술적 신뢰 형성을 주도하는 역할","기술 문서를 관리하는 역할"], correct: 2 },
@@ -341,9 +361,9 @@ window.uploadInitialData = async function() {
     try {
         await Promise.all(batchPromises);
         console.log("Upload Complete! 50 questions added.");
-        alert("데이터 업로드가 완료되었습니다!");
+        alert("데이터 업로드가 완료되었습니다! 이제 퀴즈를 즐기세요.");
     } catch(e) {
         console.error("Upload Failed", e);
-        alert("업로드 실패. 콘솔을 확인하세요.");
+        alert("업로드 실패. 콘솔 로그를 확인하세요.");
     }
 };
